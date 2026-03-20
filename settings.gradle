@@ -1,0 +1,16 @@
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'workflow-platform'
+
+include 'core:core-domain'
+include 'core:core-engine'
+include 'core:core-plugin-sdk'
+include 'core:core-plugin-builtin'
+include 'infrastructure:infra-persistence'
+include 'infrastructure:infra-templating'
+include 'infrastructure:infra-yaml'
+include 'infrastructure:infra-secrets'
+include 'infrastructure:infra-secrets-vault'
+include 'applications:app-api'
