@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -e
+
+msg_file=$1
+first_line=$(head -n1 "$msg_file")
+
+if [[ "$first_line" =~ ^(Merge|Revert) ]]; then
+    exit 0
+fi
+
+pattern='^(feat|fix|refactor|perf|docs|test|build|ci|chore|style)(\([a-z0-9_.-]+\))?: .+'
+
+if [[ ! "$first_line" =~ $pattern ]]; then
+    cat <<EOF
+Commit message rejected - Conventional Commits format required.
+
+Got:
+  $first_line
+
+Expected format:
+  <type>(<scope>): <description>
+
+Where <type> is one of:
+  feat       new user-visible feature
+  fix        bug fix
+  refactor   internal restructuring (no behaviour change)
+  perf       performance improvement
+  docs       documentation only
+  test       tests only
+  build      build / deps / Dockerfile
+  ci         CI workflows
+  chore      housekeeping
+  style      formatting only
+
+The (scope) is optional but encouraged when the change is local
+to a single module - e.g. (engine), (infra-persistence), (adr-0017).
+
+Examples that work:
+  feat(engine): real parallel ForEach via StructuredTaskScope
+  fix: dispatcher swallowed transient DB connection errors
+  docs(adr-0018): introduce metrics design
+
+To bypass this check (use sparingly), commit with --no-verify.
+EOF
+    exit 1
+fi
+
+if [[ ${#first_line} -gt 100 ]]; then
+    echo "subject line is ${#first_line} chars (over 100). Consider shortening."
+fi

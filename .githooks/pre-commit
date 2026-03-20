@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -e
+
+if command -v gitleaks >/dev/null 2>&1; then
+    if ! gitleaks protect --staged --redact --no-banner --exit-code 1; then
+        echo "gitleaks found potential secrets in your staged changes."
+        echo "  Review the redacted matches above. If a false positive,"
+        echo "  add a gitleaks:allow comment or update .gitleaks.toml."
+        exit 1
+    fi
+else
+    echo "gitleaks not installed - skipping secret scan."
+    echo "  Install: https://github.com/gitleaks/gitleaks (recommended)"
+fi
+
+crlf_offenders=$(
+    git diff --cached --name-only --diff-filter=AM \
+        | grep -E '(^gradlew$|^\.githooks/|\.sh$)' \
+        | while IFS= read -r f; do
+              if git show ":$f" 2>/dev/null | grep -qU $'\r'; then
+                  echo "$f"
+              fi
+          done
+)
+
+if [ -n "$crlf_offenders" ]; then
+    echo "CRLF line endings detected in staged files (Unix scripts / source):"
+    echo "$crlf_offenders" | sed 's/^/    /'
+    echo
+    echo "Fix on Linux/Mac/Git-Bash:  sed -i 's/\r\$//' <file>"
+    echo "Fix on Windows PowerShell:  (Get-Content <file> -Raw).Replace(\"\`r\`n\",\"\`n\") | Set-Content <file> -NoNewline"
+    echo "Or just re-stage after a fresh checkout - .gitattributes will normalise."
+    exit 1
+fi
+
+exit 0
