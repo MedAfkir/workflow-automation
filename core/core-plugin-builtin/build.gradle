@@ -1,0 +1,26 @@
+plugins {
+    id 'java-library'
+    alias(libs.plugins.spring.dep.mgmt)
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${libs.versions.spring.boot.get()}"
+    }
+}
+
+dependencies {
+    api project(':core:core-plugin-sdk')
+
+    implementation 'org.springframework:spring-context'
+
+    implementation 'tools.jackson.core:jackson-databind'
+
+    implementation libs.cron.utils
+
+    implementation libs.slf4j.api
+
+    testImplementation libs.junit.jupiter
+    testImplementation libs.assertj.core
+    testRuntimeOnly libs.junit.platform.launcher
+}
