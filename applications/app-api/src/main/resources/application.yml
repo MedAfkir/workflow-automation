@@ -1,0 +1,85 @@
+spring:
+  application:
+    name: workflow-api
+
+  datasource:
+
+    url: jdbc:postgresql://localhost:5433/workflow
+    username: workflow
+    password: workflow
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 2
+      leak-detection-threshold: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc.time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  info:
+
+    env:
+      enabled: true
+
+info:
+  app:
+    description: "A small workflow orchestration engine in the spirit of Kestra, n8n and Temporal."
+  env:
+    profile: ${spring.profiles.active:default}
+
+workflow:
+  dispatcher:
+
+    enabled: true
+    poll-interval: PT2S
+    lease-ttl: PT5M
+
+    batch-size: 10
+    shutdown-timeout: PT30S
+  trigger:
+    enabled: true
+    poll-interval: PT5S
+  secrets:
+
+    master-key: ${WORKFLOW_SECRET_MASTER_KEY:}
+    vault:
+
+      enabled: false
+      uri: http://localhost:8200
+      base-path: secret/data/workflow
+      role-id: ${WORKFLOW_VAULT_ROLE_ID:}
+      secret-id: ${WORKFLOW_VAULT_SECRET_ID:}
+
+logging:
+  level:
+    root: INFO
+    com.afkir: DEBUG

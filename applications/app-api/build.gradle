@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dep.mgmt)
+}
+
+springBoot {
+    buildInfo()
+}
+
+dependencies {
+    implementation project(':core:core-domain')
+    implementation project(':core:core-plugin-sdk')
+    implementation project(':core:core-plugin-builtin')
+    implementation project(':core:core-engine')
+    implementation project(':infrastructure:infra-persistence')
+    implementation project(':infrastructure:infra-templating')
+    implementation project(':infrastructure:infra-yaml')
+    implementation project(':infrastructure:infra-secrets')
+    implementation project(':infrastructure:infra-secrets-vault')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    
+    implementation 'tools.jackson.dataformat:jackson-dataformat-yaml'
+
+    implementation 'io.projectreactor:reactor-core'
+
+    implementation 'com.github.victools:jsonschema-generator:4.36.0'
+    implementation 'com.github.victools:jsonschema-module-jakarta-validation:4.36.0'
+
+    runtimeOnly libs.postgresql
+    
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-flyway'
+    runtimeOnly libs.flyway.postgres
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'  
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation libs.testcontainers.postgres
+    testImplementation libs.testcontainers.junit
+    testImplementation libs.assertj.core
+    testImplementation libs.archunit.junit5
+    testImplementation libs.awaitility
+    testRuntimeOnly libs.junit.platform.launcher
+}
