@@ -1,0 +1,23 @@
+workflow:
+  dispatcher:
+    poll-interval: PT0.1S
+    lease-ttl: PT30S
+    batch-size: 10
+    shutdown-timeout: PT2S
+    gc-interval: PT0.5S
+  trigger:
+    enabled: false
+
+  logs:
+    flush-interval: 50
+    flush-batch-size: 50
+    buffer-capacity: 256
+  secrets:
+
+    master-key: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+
+logging:
+  level:
+    root: WARN
+    com.afkir: INFO
+    org.testcontainers: INFO
