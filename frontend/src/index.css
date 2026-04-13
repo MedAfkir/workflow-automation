@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    background: oklch(0.165 0.006 195);
+  }
+
+  body {
+    @apply font-mono text-cmd-fg antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: oklch(0.78 0.125 195 / 0.3);
+    color: oklch(0.165 0.006 195);
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      oklch(0.305 0.01 195) 1px,
+      transparent 0
+    );
+    background-size: 24px 24px;
+  }
+}
+
+@layer components {
+  
+  .text-display {
+    @apply font-sans tracking-display;
+    font-weight: 510;
+    line-height: 1;
+    font-size: 48px;
+  }
+
+  .text-heading-1 {
+    @apply font-sans tracking-heading-1;
+    font-weight: 400;
+    line-height: 1.13;
+    font-size: 32px;
+  }
+
+  .text-heading-3 {
+    @apply font-sans tracking-heading-3;
+    font-weight: 590;
+    line-height: 1.33;
+    font-size: 20px;
+  }
+
+  .text-body {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .text-body-medium {
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 510;
+  }
+
+  .text-small {
+    @apply tracking-small;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .text-caption {
+    @apply tracking-caption;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .text-label {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .text-micro {
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 510;
+  }
+}
+
+.react-flow {
+  background-color: oklch(0.165 0.006 195);
+}
+
+.react-flow__edge-path {
+  stroke: oklch(0.4 0.012 195);
+  stroke-width: 2;
+}
+
+.react-flow__edge.dashed .react-flow__edge-path {
+  stroke-dasharray: 5 5;
+  stroke-width: 1.5;
+  stroke: oklch(0.305 0.01 195);
+}
+
+.react-flow__edge.running .react-flow__edge-path {
+  stroke: oklch(0.72 0.12 235);
+}
+
+.react-flow__edge.success .react-flow__edge-path {
+  stroke: oklch(0.74 0.13 150);
+}
+
+.react-flow__edge.failed .react-flow__edge-path {
+  stroke: oklch(0.66 0.18 25);
+}
+
+.react-flow__handle {
+  background: oklch(0.4 0.012 195);
+  width: 6px;
+  height: 6px;
+  border: none;
+}
+
+.react-flow__controls {
+  background: oklch(0.245 0.008 195);
+  border: 1px solid oklch(0.305 0.01 195);
+  border-radius: 6px;
+}
+
+.react-flow__controls-button {
+  background: transparent;
+  border-bottom: 1px solid oklch(0.305 0.01 195);
+  color: oklch(0.79 0.011 195);
+}
+
+.react-flow__controls-button:hover {
+  background: oklch(0.275 0.01 195);
+}
+
+.react-flow__attribution {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.305 0.01 195);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.4 0.012 195);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
