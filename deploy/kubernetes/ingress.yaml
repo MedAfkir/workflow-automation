@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: workflow
+  namespace: workflow
+  labels:
+    app.kubernetes.io/name: workflow-platform
+    app.kubernetes.io/component: app-api
+  annotations:
+
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+
+spec:
+  ingressClassName: nginx
+
+  rules:
+    - host: workflow.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: workflow-app-api
+                port:
+                  number: 80
