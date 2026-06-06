@@ -10,4 +10,4 @@ export interface DraftSnapshot {
   key: string;
   tasks: DraftTask[];
 }
-export type AuthoringView = 'canvas' | 'yaml';
+export type EditorView = 'canvas' | 'yaml';

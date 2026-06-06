@@ -26,7 +26,7 @@ const SHORTCUTS: {
   keys: ['?'],
   label: 'This cheatsheet'
 }];
-export function AuthoringShortcuts({
+export function EditorShortcuts({
   open,
   onClose
 }: {
@@ -50,7 +50,7 @@ export function AuthoringShortcuts({
   }, [open, onClose]);
   if (!open) return null;
   return <div className="fixed inset-0 z-50 grid place-items-center p-6">
-      <div ref={panelRef} role="dialog" aria-modal="true" aria-label="Authoring keyboard shortcuts" className="w-[320px] rounded-md border border-cmd-line-strong bg-cmd-raised">
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-label="Editor keyboard shortcuts" className="w-[320px] rounded-md border border-cmd-line-strong bg-cmd-raised">
         <div className="flex items-center justify-between border-b border-cmd-line px-4 py-2.5">
           <span className="font-mono text-[12px] font-semibold text-cmd-fg">
             Keyboard shortcuts

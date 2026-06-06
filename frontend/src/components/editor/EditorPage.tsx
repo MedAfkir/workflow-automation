@@ -4,29 +4,29 @@ import { AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ApiError } from '@/lib/api/client';
 import { createWorkflow } from '@/lib/api/workflows';
-import { serializeWorkflow } from '@/lib/authoring/serialize';
-import { invalidTaskIds, validate } from '@/lib/authoring/validate';
-import { clearDraft, readDraft, writeDraft, type StoredDraft } from '@/lib/authoring/draft';
-import { useAuthoringStore } from './store';
-import { AuthoringHeader } from './AuthoringHeader';
+import { serializeWorkflow } from '@/lib/editor/serialize';
+import { invalidTaskIds, validate } from '@/lib/editor/validate';
+import { clearDraft, readDraft, writeDraft, type StoredDraft } from '@/lib/editor/draft';
+import { useEditorStore } from './store';
+import { EditorHeader } from './EditorHeader';
 import { PluginPalette } from './PluginPalette';
-import { AuthoringCanvas } from './AuthoringCanvas';
+import { EditorCanvas } from './EditorCanvas';
 import { ConfigPanel } from './ConfigPanel';
 import { YamlPreview } from './YamlPreview';
 import { DraftBanner } from './DraftBanner';
-import { AuthoringShortcuts } from './AuthoringShortcuts';
-export function AuthoringPage() {
+import { EditorShortcuts } from './EditorShortcuts';
+export function EditorPage() {
   const navigate = useNavigate();
-  const namespace = useAuthoringStore(s => s.namespace);
-  const wkey = useAuthoringStore(s => s.key);
-  const tasks = useAuthoringStore(s => s.tasks);
-  const selectedId = useAuthoringStore(s => s.selectedId);
-  const view = useAuthoringStore(s => s.view);
-  const dirty = useAuthoringStore(s => s.dirty);
-  const setView = useAuthoringStore(s => s.setView);
-  const removeTask = useAuthoringStore(s => s.removeTask);
-  const hydrate = useAuthoringStore(s => s.hydrate);
-  const reset = useAuthoringStore(s => s.reset);
+  const namespace = useEditorStore(s => s.namespace);
+  const wkey = useEditorStore(s => s.key);
+  const tasks = useEditorStore(s => s.tasks);
+  const selectedId = useEditorStore(s => s.selectedId);
+  const view = useEditorStore(s => s.view);
+  const dirty = useEditorStore(s => s.dirty);
+  const setView = useEditorStore(s => s.setView);
+  const removeTask = useEditorStore(s => s.removeTask);
+  const hydrate = useEditorStore(s => s.hydrate);
+  const reset = useEditorStore(s => s.reset);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showErrors, setShowErrors] = useState(false);
@@ -53,9 +53,9 @@ export function AuthoringPage() {
   }, [dirty, namespace, wkey, tasks]);
   const handleSave = useCallback(async () => {
     const snapshot = {
-      namespace: useAuthoringStore.getState().namespace,
-      key: useAuthoringStore.getState().key,
-      tasks: useAuthoringStore.getState().tasks
+      namespace: useEditorStore.getState().namespace,
+      key: useEditorStore.getState().key,
+      tasks: useEditorStore.getState().tasks
     };
     const errs = validate(snapshot).filter(i => i.level === 'error');
     if (errs.length > 0) {
@@ -127,7 +127,7 @@ export function AuthoringPage() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [handleSave, selectedId, shortcutsOpen, setView, removeTask, navigate]);
   return <div className="flex h-full w-full flex-col bg-cmd-bg font-mono text-cmd-fg">
-      <AuthoringHeader view={view} onViewChange={setView} issues={issues} saving={saving} onSave={() => void handleSave()} />
+      <EditorHeader view={view} onViewChange={setView} issues={issues} saving={saving} onSave={() => void handleSave()} />
 
       {draftFound && <DraftBanner savedAt={draftFound.savedAt} onResume={() => {
       hydrate(draftFound.snapshot);
@@ -152,7 +152,7 @@ export function AuthoringPage() {
         <PluginPalette />
 
         <div className="flex min-w-0 flex-1 flex-col">
-          {view === 'canvas' ? <AuthoringCanvas invalidIds={invalidIds} /> : <YamlPreview />}
+          {view === 'canvas' ? <EditorCanvas invalidIds={invalidIds} /> : <YamlPreview />}
         </div>
 
         <ConfigPanel issues={issues} showErrors={showErrors} />
@@ -160,7 +160,7 @@ export function AuthoringPage() {
 
       <StatusBar taskCount={tasks.length} blockingCount={blockingCount} />
 
-      <AuthoringShortcuts open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      <EditorShortcuts open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </div>;
 }
 function StatusBar({

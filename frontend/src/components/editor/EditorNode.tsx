@@ -3,8 +3,8 @@ import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glyphForType } from './glyphs';
-import type { DraftTask } from '@/lib/authoring/types';
-export interface AuthoringNodeData {
+import type { DraftTask } from '@/lib/editor/types';
+export interface EditorNodeData {
   task: DraftTask;
   selected: boolean;
   invalid: boolean;
@@ -15,7 +15,7 @@ export interface AuthoringNodeData {
 function shortPluginName(type: string): string {
   return type.split('.').pop() ?? type;
 }
-function AuthoringNodeImpl({
+function EditorNodeImpl({
   data
 }: NodeProps) {
   const {
@@ -24,7 +24,7 @@ function AuthoringNodeImpl({
     invalid,
     branchCount,
     onDelete
-  } = data as AuthoringNodeData;
+  } = data as EditorNodeData;
   const Icon = glyphForType(task.type);
   return <div className="group/node relative">
       <Handle type="target" position={Position.Top} className="!h-2 !w-2 !bg-cmd-line-strong hover:!bg-cmd-accent" />
@@ -60,4 +60,4 @@ function AuthoringNodeImpl({
       <Handle type="source" position={Position.Bottom} className="!h-2 !w-2 !bg-cmd-line-strong hover:!bg-cmd-accent" />
     </div>;
 }
-export const AuthoringNode = memo(AuthoringNodeImpl);
+export const EditorNode = memo(EditorNodeImpl);

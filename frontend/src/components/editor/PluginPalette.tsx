@@ -3,17 +3,17 @@ import { Search, Workflow, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePlugins } from '@/lib/api/plugins';
 import { mockPlugins } from '@/lib/mockData';
-import { hasBranches } from '@/lib/authoring/flowables';
+import { hasBranches } from '@/lib/editor/flowables';
 import type { PluginSummary } from '@/lib/types';
 import { glyphForType } from './glyphs';
 import { PLUGIN_DND_MIME } from './dnd';
-import { useAuthoringStore } from './store';
+import { useEditorStore } from './store';
 export function PluginPalette() {
   const {
     data
   } = usePlugins();
   const all = data && data.length > 0 ? data : mockPlugins;
-  const addTask = useAuthoringStore(s => s.addTask);
+  const addTask = useEditorStore(s => s.addTask);
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
