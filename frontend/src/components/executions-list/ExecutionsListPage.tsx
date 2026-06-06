@@ -1,13 +1,51 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { Filters, type StateFilter } from './Filters';
+import { Filters } from './Filters';
 import { ExecutionsTable } from './ExecutionsTable';
 import { ROW_GRID } from './grid';
 import { cn } from '@/lib/utils';
 import { useExecutions } from '@/lib/api/executions';
+import { compileMatcher, type FilterSchema } from '@/lib/filterQuery';
+import type { ExecutionSummary } from '@/lib/types';
+const EXEC_FILTER_SCHEMA: FilterSchema<ExecutionSummary> = {
+  fields: [{
+    key: 'state',
+    label: 'State',
+    description: 'Run status',
+    match: 'enum',
+    values: ['CREATED', 'RUNNING', 'SUCCESS', 'FAILED', 'KILLED'],
+    get: e => e.state
+  }, {
+    key: 'trigger',
+    label: 'Trigger',
+    description: 'How it started',
+    match: 'enum',
+    values: ['MANUAL', 'SCHEDULE', 'WEBHOOK'],
+    get: e => e.triggerType
+  }, {
+    key: 'workflow',
+    label: 'Workflow',
+    description: 'Workflow key',
+    match: 'substring',
+    get: e => e.workflowKey
+  }, {
+    key: 'namespace',
+    label: 'Namespace',
+    description: 'Workflow namespace',
+    match: 'substring',
+    get: e => e.workflowNamespace
+  }, {
+    key: 'execution',
+    label: 'Execution',
+    description: 'Execution id',
+    match: 'substring',
+    suggest: false,
+    get: e => e.id
+  }],
+  text: e => [e.workflowKey, e.workflowNamespace, e.id]
+};
 export function ExecutionsListPage() {
-  const [search, setSearch] = useState('');
-  const [stateFilter, setStateFilter] = useState<StateFilter>('ALL');
+  const [query, setQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const {
     data,
@@ -18,19 +56,11 @@ export function ExecutionsListPage() {
     limit: 50
   });
   const filtered = useMemo(() => {
-    const all = data ?? [];
-    const q = search.trim().toLowerCase();
-    return all.filter(e => {
-      if (stateFilter !== 'ALL' && e.state !== stateFilter) return false;
-      if (!q) return true;
-      return e.workflowKey.toLowerCase().includes(q) || e.workflowNamespace.toLowerCase().includes(q) || e.id.toLowerCase().includes(q);
-    });
-  }, [data, search, stateFilter]);
-  const isFiltered = search.trim() !== '' || stateFilter !== 'ALL';
-  const clearFilters = () => {
-    setSearch('');
-    setStateFilter('ALL');
-  };
+    const match = compileMatcher(query, EXEC_FILTER_SCHEMA);
+    return (data ?? []).filter(match);
+  }, [data, query]);
+  const isFiltered = query.trim() !== '';
+  const clearFilters = () => setQuery('');
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -39,14 +69,11 @@ export function ExecutionsListPage() {
       if (e.key === '/' && !typing) {
         e.preventDefault();
         searchInputRef.current?.focus();
-      } else if (e.key === 'Escape' && el === searchInputRef.current) {
-        if (search) setSearch('');
-        searchInputRef.current?.blur();
       }
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [search]);
+  }, []);
   return <div className="flex h-full flex-col bg-cmd-bg font-mono text-cmd-fg">
       <header className="flex h-16 items-center border-b border-cmd-line bg-cmd-raised px-6">
         <div>
@@ -59,7 +86,7 @@ export function ExecutionsListPage() {
         </div>
       </header>
 
-      <Filters search={search} onSearchChange={setSearch} stateFilter={stateFilter} onStateFilterChange={setStateFilter} totalCount={data?.length ?? 0} filteredCount={filtered.length} searchInputRef={searchInputRef} />
+      <Filters query={query} onQueryChange={setQuery} schema={EXEC_FILTER_SCHEMA} items={data ?? []} totalCount={data?.length ?? 0} filteredCount={filtered.length} searchInputRef={searchInputRef} />
 
       {isError ? <ErrorState message={(error as Error | null)?.message ?? 'Unknown error'} /> : isLoading ? <SkeletonTable /> : <ExecutionsTable executions={filtered} hasAnyExecutions={(data?.length ?? 0) > 0} isFiltered={isFiltered} onClearFilters={clearFilters} />}
     </div>;
