@@ -8,6 +8,7 @@ import com.afkir.workflow.domain.execution.ExecutionId;
 import com.afkir.workflow.domain.execution.ExecutionRepository;
 import com.afkir.workflow.domain.execution.ExecutionState;
 import com.afkir.workflow.domain.execution.TaskRunRepository;
+import com.afkir.workflow.domain.execution.TaskRunState;
 import com.afkir.workflow.domain.task.ErrorHandling;
 import com.afkir.workflow.domain.workflow.WorkflowRepository;
 import org.slf4j.Logger;
@@ -60,6 +61,13 @@ public class WorkflowRunner {
                         "WorkflowRevision not found: " + revisionId));
 
         var existingRuns = taskRunRepository.findByExecutionIdOrderBySequence(executionId);
+
+        for (var existing : existingRuns) {
+            if (existing.isRoot() && existing.state() == TaskRunState.WAITING) {
+                taskRunRepository.save(existing.succeeded(Map.of()));
+            }
+        }
+
         var graph = ExecutionGraph.resume(execution, revision, existingRuns);
 
         log.info("Starting/resuming execution {} (errorHandling={}, concurrency.max={})",
@@ -109,6 +117,8 @@ public class WorkflowRunner {
                 }
             }
             if (cancellation.isCancelled()) break;
+
+            if (suspendUntil != null) break;
 
             var ready = graph.nextReady();
             if (ready.isEmpty() && graph.inFlight().isEmpty()) {
