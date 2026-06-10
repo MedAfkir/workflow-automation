@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { pluginSchema } from '@/lib/authoring/catalog';
-import { branchesFor } from '@/lib/authoring/flowables';
-import type { AuthoringView, DraftSnapshot, DraftTask } from '@/lib/authoring/types';
+import { pluginSchema } from '@/lib/editor/catalog';
+import { branchesFor } from '@/lib/editor/flowables';
+import type { EditorView, DraftSnapshot, DraftTask } from '@/lib/editor/types';
 import type { PluginProperty } from '@/lib/types';
 function coerceDefault(p: PluginProperty): unknown {
   const d = p.defaultValue;
@@ -50,13 +50,13 @@ function mapBranch(tasks: DraftTask[], parentId: string, branch: string, fn: (ki
     }
   } : t);
 }
-interface AuthoringState extends DraftSnapshot {
+interface EditorState extends DraftSnapshot {
   selectedId: string | null;
-  view: AuthoringView;
+  view: EditorView;
   dirty: boolean;
   setNamespace: (v: string) => void;
   setKey: (v: string) => void;
-  setView: (v: AuthoringView) => void;
+  setView: (v: EditorView) => void;
   select: (id: string | null) => void;
   addTask: (type: string) => void;
   removeTask: (id: string) => void;
@@ -73,7 +73,7 @@ interface AuthoringState extends DraftSnapshot {
 }
 const INITIAL: DraftSnapshot & {
   selectedId: null;
-  view: AuthoringView;
+  view: EditorView;
   dirty: false;
 } = {
   namespace: '',
@@ -83,7 +83,7 @@ const INITIAL: DraftSnapshot & {
   view: 'canvas',
   dirty: false
 };
-export const useAuthoringStore = create<AuthoringState>(set => ({
+export const useEditorStore = create<EditorState>(set => ({
   ...INITIAL,
   setNamespace: v => set({
     namespace: v,

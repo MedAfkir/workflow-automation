@@ -5,7 +5,7 @@ import { LandingPage } from '@/components/landing/LandingPage';
 import { ExecutionsListPage } from '@/components/executions-list/ExecutionsListPage';
 import { ExecutionDetailRoute } from '@/components/execution/ExecutionDetailRoute';
 import { WorkflowsListPage } from '@/components/workflows/WorkflowsListPage';
-import { AuthoringPage } from '@/components/authoring/AuthoringPage';
+import { EditorPage } from '@/components/editor/EditorPage';
 import { WorkflowDetailRoute } from '@/components/workflows/WorkflowDetailRoute';
 import { NamespacesListPage } from '@/components/namespaces/NamespacesListPage';
 import { PluginsListPage } from '@/components/plugins/PluginsListPage';
@@ -21,9 +21,9 @@ export default function App() {
           <Route path="/executions/:id" element={<ExecutionDetailRoute />} />
 
           <Route path="/workflows" element={<WorkflowsListPage />} />
-          <Route path="/workflows/new" element={<AuthoringPage />} />
+          <Route path="/workflows/new" element={<EditorPage />} />
           <Route path="/workflows/:id" element={<WorkflowDetailRoute />} />
-          <Route path="/workflows/:id/edit" element={<StubPage title="Authoring" description="Visual workflow authoring - palette, editable canvas, schema-driven config, YAML round-trip. Lands in roadmap phases 1.1-1.6; the read-only detail view ships first." />} />
+          <Route path="/workflows/:id/edit" element={<StubPage title="Editor" description="Visual workflow editor - palette, editable canvas, schema-driven config, YAML round-trip. Lands in roadmap phases 1.1-1.6; the read-only detail view ships first." />} />
 
           <Route path="/namespaces" element={<NamespacesListPage />} />
 

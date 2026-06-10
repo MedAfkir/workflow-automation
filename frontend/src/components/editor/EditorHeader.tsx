@@ -3,27 +3,27 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle, Check, ChevronRight, FileCode2, GitBranch, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFocusTrap } from '@/lib/useFocusTrap';
-import type { Issue } from '@/lib/authoring/validate';
-import type { AuthoringView } from '@/lib/authoring/types';
-import { useAuthoringStore } from './store';
-interface AuthoringHeaderProps {
-  view: AuthoringView;
-  onViewChange: (v: AuthoringView) => void;
+import type { Issue } from '@/lib/editor/validate';
+import type { EditorView } from '@/lib/editor/types';
+import { useEditorStore } from './store';
+interface EditorHeaderProps {
+  view: EditorView;
+  onViewChange: (v: EditorView) => void;
   issues: Issue[];
   saving: boolean;
   onSave: () => void;
 }
-export function AuthoringHeader({
+export function EditorHeader({
   view,
   onViewChange,
   issues,
   saving,
   onSave
-}: AuthoringHeaderProps) {
-  const namespace = useAuthoringStore(s => s.namespace);
-  const wkey = useAuthoringStore(s => s.key);
-  const setNamespace = useAuthoringStore(s => s.setNamespace);
-  const setKey = useAuthoringStore(s => s.setKey);
+}: EditorHeaderProps) {
+  const namespace = useEditorStore(s => s.namespace);
+  const wkey = useEditorStore(s => s.key);
+  const setNamespace = useEditorStore(s => s.setNamespace);
+  const setKey = useEditorStore(s => s.setKey);
   const errors = issues.filter(i => i.level === 'error');
   const canSave = errors.length === 0 && !saving;
   const nsError = errors.some(i => i.field === 'namespace');
@@ -78,11 +78,11 @@ function ViewToggle({
   view,
   onViewChange
 }: {
-  view: AuthoringView;
-  onViewChange: (v: AuthoringView) => void;
+  view: EditorView;
+  onViewChange: (v: EditorView) => void;
 }) {
   const tabs: {
-    value: AuthoringView;
+    value: EditorView;
     label: string;
     icon: typeof GitBranch;
     kbd: string;
@@ -123,8 +123,8 @@ function ValidityChip({
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const select = useAuthoringStore(s => s.select);
-  const setView = useAuthoringStore(s => s.setView);
+  const select = useEditorStore(s => s.select);
+  const setView = useEditorStore(s => s.setView);
   useFocusTrap(panelRef, open, () => setOpen(false), triggerRef);
   useEffect(() => {
     if (!open) return;

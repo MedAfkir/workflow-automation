@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { serializeWorkflow } from '@/lib/authoring/serialize';
-import { useAuthoringStore } from './store';
+import { serializeWorkflow } from '@/lib/editor/serialize';
+import { useEditorStore } from './store';
 export function YamlPreview() {
-  const namespace = useAuthoringStore(s => s.namespace);
-  const key = useAuthoringStore(s => s.key);
-  const tasks = useAuthoringStore(s => s.tasks);
+  const namespace = useEditorStore(s => s.namespace);
+  const key = useEditorStore(s => s.key);
+  const tasks = useEditorStore(s => s.tasks);
   const yaml = useMemo(() => serializeWorkflow({
     namespace,
     key,

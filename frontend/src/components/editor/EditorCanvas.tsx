@@ -2,34 +2,34 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { Background, BackgroundVariant, Controls, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState, useReactFlow, useUpdateNodeInternals, type Connection, type Edge, type Node } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
 import { MousePointerClick } from 'lucide-react';
-import { AuthoringNode, type AuthoringNodeData } from './AuthoringNode';
-import { useAuthoringStore } from './store';
+import { EditorNode, type EditorNodeData } from './EditorNode';
+import { useEditorStore } from './store';
 import { PLUGIN_DND_MIME } from './dnd';
-import type { DraftTask } from '@/lib/authoring/types';
+import type { DraftTask } from '@/lib/editor/types';
 const NODE_WIDTH = 200;
 const NODE_HEIGHT = 56;
 const nodeTypes = {
-  task: AuthoringNode
+  task: EditorNode
 };
-interface AuthoringCanvasProps {
+interface EditorCanvasProps {
   invalidIds: Set<string>;
 }
-export function AuthoringCanvas({
+export function EditorCanvas({
   invalidIds
-}: AuthoringCanvasProps) {
+}: EditorCanvasProps) {
   return <ReactFlowProvider>
       <Flow invalidIds={invalidIds} />
     </ReactFlowProvider>;
 }
 function Flow({
   invalidIds
-}: AuthoringCanvasProps) {
-  const tasks = useAuthoringStore(s => s.tasks);
-  const selectedId = useAuthoringStore(s => s.selectedId);
-  const select = useAuthoringStore(s => s.select);
-  const addTask = useAuthoringStore(s => s.addTask);
-  const removeTask = useAuthoringStore(s => s.removeTask);
-  const connect = useAuthoringStore(s => s.connect);
+}: EditorCanvasProps) {
+  const tasks = useEditorStore(s => s.tasks);
+  const selectedId = useEditorStore(s => s.selectedId);
+  const select = useEditorStore(s => s.select);
+  const addTask = useEditorStore(s => s.addTask);
+  const removeTask = useEditorStore(s => s.removeTask);
+  const connect = useEditorStore(s => s.connect);
   const rf = useReactFlow();
   const updateNodeInternals = useUpdateNodeInternals();
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -47,7 +47,7 @@ function Flow({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<AuthoringNodeData>>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<EditorNodeData>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const structureSig = useMemo(() => tasks.map(t => `${t.id}:${t.dependsOn.join('.')}`).join('|'), [tasks]);
   useEffect(() => {
@@ -130,7 +130,7 @@ function EmptyCanvas() {
     </div>;
 }
 function buildGraph(tasks: DraftTask[], selectedId: string | null, invalidIds: Set<string>, onDelete: (id: string) => void): {
-  nodes: Node<AuthoringNodeData>[];
+  nodes: Node<EditorNodeData>[];
   edges: Edge[];
 } {
   const ids = new Set(tasks.map(t => t.id));
@@ -165,7 +165,7 @@ function buildGraph(tasks: DraftTask[], selectedId: string | null, invalidIds: S
     }
   }
   const positions = layout(tasks, edges);
-  const nodes: Node<AuthoringNodeData>[] = tasks.map(t => {
+  const nodes: Node<EditorNodeData>[] = tasks.map(t => {
     const branchCount = Object.values(t.children).reduce((n, kids) => n + kids.length, 0);
     return {
       id: t.id,

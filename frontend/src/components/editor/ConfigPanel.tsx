@@ -4,14 +4,14 @@ import { ArrowRight, Settings2, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePlugins } from '@/lib/api/plugins';
 import { mockPlugins } from '@/lib/mockData';
-import { pluginSchema } from '@/lib/authoring/catalog';
-import { branchesFor } from '@/lib/authoring/flowables';
-import type { Issue } from '@/lib/authoring/validate';
-import type { DraftTask } from '@/lib/authoring/types';
+import { pluginSchema } from '@/lib/editor/catalog';
+import { branchesFor } from '@/lib/editor/flowables';
+import type { Issue } from '@/lib/editor/validate';
+import type { DraftTask } from '@/lib/editor/types';
 import type { PluginProperty, PluginSummary } from '@/lib/types';
 import { ConfigField } from './ConfigField';
 import { glyphForType } from './glyphs';
-import { useAuthoringStore } from './store';
+import { useEditorStore } from './store';
 interface ConfigPanelProps {
   issues: Issue[];
   showErrors: boolean;
@@ -20,8 +20,8 @@ export function ConfigPanel({
   issues,
   showErrors
 }: ConfigPanelProps) {
-  const tasks = useAuthoringStore(s => s.tasks);
-  const selectedId = useAuthoringStore(s => s.selectedId);
+  const tasks = useEditorStore(s => s.tasks);
+  const selectedId = useEditorStore(s => s.selectedId);
   const task = tasks.find(t => t.id === selectedId) ?? null;
   return <aside className="flex w-[340px] shrink-0 flex-col overflow-y-auto border-l border-cmd-line bg-cmd-raised" aria-label="Task configuration">
       {task ? <TaskConfig key={task.id} task={task} allTasks={tasks} issues={issues} showErrors={showErrors} /> : <EmptyState />}
@@ -52,11 +52,11 @@ function TaskConfig({
   issues: Issue[];
   showErrors: boolean;
 }) {
-  const renameTask = useAuthoringStore(s => s.renameTask);
-  const setConfigValue = useAuthoringStore(s => s.setConfigValue);
-  const removeTask = useAuthoringStore(s => s.removeTask);
-  const connect = useAuthoringStore(s => s.connect);
-  const disconnect = useAuthoringStore(s => s.disconnect);
+  const renameTask = useEditorStore(s => s.renameTask);
+  const setConfigValue = useEditorStore(s => s.setConfigValue);
+  const removeTask = useEditorStore(s => s.removeTask);
+  const connect = useEditorStore(s => s.connect);
+  const disconnect = useEditorStore(s => s.disconnect);
   const [touched, setTouched] = useState<Set<string>>(new Set());
   useEffect(() => setTouched(new Set()), [task.id]);
   const schema = pluginSchema(task.type);
@@ -144,7 +144,7 @@ function BranchEditor({
   branch: string;
   kids: DraftTask[];
 }) {
-  const addChild = useAuthoringStore(s => s.addChild);
+  const addChild = useEditorStore(s => s.addChild);
   const {
     data
   } = usePlugins();
@@ -185,9 +185,9 @@ function ChildEditor({
   branch: string;
   child: DraftTask;
 }) {
-  const renameChild = useAuthoringStore(s => s.renameChild);
-  const removeChild = useAuthoringStore(s => s.removeChild);
-  const setChildConfigValue = useAuthoringStore(s => s.setChildConfigValue);
+  const renameChild = useEditorStore(s => s.renameChild);
+  const removeChild = useEditorStore(s => s.removeChild);
+  const setChildConfigValue = useEditorStore(s => s.setChildConfigValue);
   const schema = pluginSchema(child.type);
   const fields: PluginProperty[] = schema ? schema.properties.filter(p => p.type !== 'task[]') : [];
   const Icon = glyphForType(child.type);

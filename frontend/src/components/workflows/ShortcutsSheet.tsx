@@ -19,7 +19,7 @@ const SHORTCUTS: {
   label: 'Definition: YAML'
 }, {
   keys: ['E'],
-  label: 'Edit (authoring)'
+  label: 'Edit (editor)'
 }, {
   keys: ['Up', 'Down'],
   label: 'Move through recent runs'
