@@ -119,6 +119,17 @@ go build -o wf .
 
 Integration tests use Testcontainers, so Docker needs to be running.
 
+### Code style & coverage
+
+[Spotless](https://github.com/diffplug/spotless) (google-java-format) and [JaCoCo](https://www.jacoco.org/jacoco/):
+
+```
+./gradlew spotlessApply
+./gradlew jacocoCoreReport
+```
+
+A 75% threshold for core modules is wired but disabled by default; enable with `-PenforceCoverage=true`.
+
 ## Configuration
 
 See `applications/app-api/src/main/resources/application.yml`. Notable settings:
