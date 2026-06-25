@@ -98,6 +98,11 @@ public class WorkflowService {
     }
     
     @Transactional(readOnly = true)
+    public java.util.List<WorkflowListItem> list() {
+        return repository.findAllSummaries();
+    }
+
+    @Transactional(readOnly = true)
     public java.util.List<WorkflowRevision> listRevisions(WorkflowId id) {
         repository.findById(id).orElseThrow(() -> new WorkflowNotFoundException(id));
         return repository.findRevisions(id);

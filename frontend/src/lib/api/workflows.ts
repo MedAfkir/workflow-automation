@@ -2,7 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { parse as parseYaml } from 'yaml';
 import { apiGet, apiPost } from './client';
 import type { Trigger, TriggerKind, WorkflowDetail, WorkflowRevision, WorkflowSummary, WorkflowTask } from '@/lib/types';
-import { mockWorkflows } from '@/lib/mockData';
+interface WorkflowSummaryWire {
+  id: string;
+  namespace: string;
+  key: string;
+  enabled: boolean;
+  currentRevision: number;
+  triggerCount: number;
+  updatedAt: string;
+}
 interface WorkflowDetailWire {
   id: string;
   namespace: string;
@@ -132,11 +140,31 @@ export async function runWorkflow(workflowId: string, inputs: Record<string, unk
     inputs
   });
 }
+function adaptSummary(w: WorkflowSummaryWire): WorkflowSummary {
+  return {
+    id: w.id,
+    namespace: w.namespace,
+    key: w.key,
+    enabled: w.enabled,
+    currentRevision: w.currentRevision,
+    triggerCount: w.triggerCount,
+    updatedAt: w.updatedAt
+  };
+}
+export async function fetchWorkflows(signal?: AbortSignal): Promise<WorkflowSummary[]> {
+  const wire = await apiGet<WorkflowSummaryWire[]>('/api/v1/workflows', {
+    signal
+  });
+  return (wire ?? []).map(adaptSummary);
+}
 export function useWorkflows() {
   return useQuery<WorkflowSummary[]>({
     queryKey: ['workflows'],
-    queryFn: async () => mockWorkflows,
-    staleTime: 30_000
+    queryFn: ({
+      signal
+    }) => fetchWorkflows(signal),
+    staleTime: 30_000,
+    retry: 1
   });
 }
 export function useWorkflow(id: string | undefined) {

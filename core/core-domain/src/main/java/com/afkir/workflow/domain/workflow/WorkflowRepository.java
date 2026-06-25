@@ -16,6 +16,8 @@ public interface WorkflowRepository {
 
     Optional<Workflow> findByNamespaceKey(NamespaceKey namespaceKey);
 
+    List<WorkflowListItem> findAllSummaries();
+
     Optional<WorkflowRevision> findRevisionById(UUID revisionId);
 
     List<WorkflowRevision> findRevisions(WorkflowId workflowId);
