@@ -68,6 +68,17 @@ public record TaskRun(
         );
     }
 
+    // A task_run is created before its config is templated, so the engine
+    // attaches the resolved inputs here, right before the terminal save.
+    // The terminal transitions below carry inputs forward unchanged.
+    public TaskRun withInputs(Map<String, Object> resolvedInputs) {
+        return new TaskRun(id, executionId, taskId, taskType,
+                parentTaskRunId, iteration,
+                sequence, state, attempt,
+                resolvedInputs, outputs, errorMessage, errorCode,
+                startedAt, endedAt, createdAt);
+    }
+
     public TaskRun started() {
         return new TaskRun(id, executionId, taskId, taskType,
                 parentTaskRunId, iteration,
