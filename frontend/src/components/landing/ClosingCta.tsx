@@ -8,9 +8,6 @@ const ROUTES = [{
   to: '/workflows',
   label: 'Workflows'
 }, {
-  to: '/triggers',
-  label: 'Triggers'
-}, {
   to: '/secrets',
   label: 'Secrets'
 }] as const;
