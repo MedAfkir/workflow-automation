@@ -30,7 +30,6 @@ export default function App() {
           <Route path="/plugins" element={<PluginsListPage />} />
           <Route path="/plugins/:id" element={<PluginDetailRoute />} />
 
-          <Route path="/triggers" element={<StubPage title="Triggers" description="Per-workflow triggers: cron schedules and webhook endpoints with HMAC verification." />} />
           <Route path="/secrets" element={<SecretsListPage />} />
           <Route path="/secrets/:namespace" element={<SecretsListPage />} />
 

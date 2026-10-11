@@ -3,7 +3,7 @@ import { TopBar } from './TopBar';
 import { DAGCanvas } from './DAGCanvas';
 import { TaskSidebar } from './TaskSidebar';
 import { LogsDrawer } from './LogsDrawer';
-import { mockLogs } from '@/lib/mockData';
+import { useExecutionLogs } from '@/lib/api/logs';
 import type { Execution } from '@/lib/types';
 interface ExecutionDetailPageProps {
   execution: Execution;
@@ -14,6 +14,12 @@ export function ExecutionDetailPage({
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>('fetch_users');
   const isLive = execution.state === 'CREATED' || execution.state === 'RUNNING';
   const selectedTask = useMemo(() => execution.taskRuns.find(t => t.taskId === selectedTaskId) ?? null, [execution.taskRuns, selectedTaskId]);
+  const taskIdByRunId = useMemo(() => new Map(execution.taskRuns.map(t => [t.id, t.taskId])), [execution.taskRuns]);
+  const {
+    logs
+  } = useExecutionLogs(execution.id, {
+    taskIdByRunId
+  });
   return <div className="flex h-full w-full flex-col bg-cmd-bg font-mono text-cmd-fg">
       <TopBar execution={execution} isLive={isLive} />
 
@@ -29,6 +35,6 @@ export function ExecutionDetailPage({
         </div>
       </main>
 
-      <LogsDrawer logs={mockLogs} selectedTaskRunId={selectedTask?.id ?? null} onSelectTask={setSelectedTaskId} />
+      <LogsDrawer logs={logs} selectedTaskRunId={selectedTask?.id ?? null} onSelectTask={setSelectedTaskId} />
     </div>;
 }

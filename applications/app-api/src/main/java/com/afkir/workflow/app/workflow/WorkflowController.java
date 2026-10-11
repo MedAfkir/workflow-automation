@@ -21,6 +21,20 @@ public class WorkflowController {
         this.service = service;
     }
 
+    @GetMapping
+    public List<WorkflowSummaryResponse> list() {
+        return service.list().stream()
+                .map(item -> new WorkflowSummaryResponse(
+                        item.id().value(),
+                        item.namespaceKey().namespace(),
+                        item.namespaceKey().key(),
+                        item.enabled(),
+                        item.currentRevision(),
+                        item.triggerCount(),
+                        item.updatedAt()))
+                .toList();
+    }
+
     @PostMapping(consumes = {"application/json", "application/x-yaml", "text/yaml"})
     public ResponseEntity<WorkflowDetailResponse> create(
             @Valid @RequestBody CreateWorkflowRequest request) {

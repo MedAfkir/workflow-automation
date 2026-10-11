@@ -73,7 +73,8 @@ public class StepExecutor {
             var outcome = taskExecutor.execute(step.taskDef(), ctx, cancellation);
 
             if (outcome instanceof TaskExecutionOutcome.Success success) {
-                taskRunRepository.save(taskRun.succeeded(success.outputs()));
+                taskRunRepository.save(
+                        taskRun.withInputs(success.resolvedInputs()).succeeded(success.outputs()));
                 if (attempt > 1) {
                     log.info("Task {} succeeded on attempt {}/{}",
                             step.taskDef().id().value(), attempt, maxAttempts);
@@ -85,7 +86,9 @@ public class StepExecutor {
 
             var failure = (TaskExecutionOutcome.Failure) outcome;
             
-            taskRunRepository.save(taskRun.failed(failure.errorCode(), failure.errorMessage()));
+            taskRunRepository.save(
+                    taskRun.withInputs(failure.resolvedInputs())
+                            .failed(failure.errorCode(), failure.errorMessage()));
             log.warn("Task {} attempt {}/{} failed [{}]: {}",
                     step.taskDef().id().value(), attempt, maxAttempts,
                     failure.errorCode(), failure.errorMessage());

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Activity, GitBranch, KeyRound, Layers, Plug, Webhook, Workflow } from 'lucide-react';
+import { Activity, GitBranch, KeyRound, Layers, Plug, Workflow } from 'lucide-react';
 import { cn } from '@/lib/utils';
 const NAV_ITEMS = [{
   to: '/executions',
@@ -17,10 +17,6 @@ const NAV_ITEMS = [{
   to: '/plugins',
   label: 'Plugins',
   icon: Plug
-}, {
-  to: '/triggers',
-  label: 'Triggers',
-  icon: Webhook
 }, {
   to: '/secrets',
   label: 'Secrets',

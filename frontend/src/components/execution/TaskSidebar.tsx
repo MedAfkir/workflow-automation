@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronRight, FileText } from 'lucide-react';
 import { StatusBadge, RetryBadge } from './StatusBadge';
+import { InputsView } from './InputsView';
 import { cn, formatDuration } from '@/lib/utils';
 import type { TaskRun } from '@/lib/types';
 interface TaskSidebarProps {
@@ -56,14 +57,12 @@ export function TaskSidebar({
 
       {}
       <Section title="Inputs" defaultOpen>
-        <JsonBlock data={taskRun.inputs} />
+        <InputsView data={taskRun.inputs} emptyLabel="No inputs" />
       </Section>
 
       {}
       <Section title="Outputs" defaultOpen={false}>
-        {taskRun.outputs ? <JsonBlock data={taskRun.outputs} /> : <span className="font-mono text-[11px] italic text-cmd-fg-mute">
-            {taskRun.state === 'PENDING' || taskRun.state === 'RUNNING' ? 'Pending' : 'No outputs'}
-          </span>}
+        <InputsView data={taskRun.outputs} emptyLabel={taskRun.state === 'PENDING' || taskRun.state === 'RUNNING' ? 'Pending' : 'No outputs'} />
       </Section>
 
       {}
@@ -106,15 +105,6 @@ function Section({
       </button>
       {open && <div className="px-5 pb-4">{children}</div>}
     </div>;
-}
-function JsonBlock({
-  data
-}: {
-  data: unknown;
-}) {
-  return <pre className={cn('rounded-md border border-cmd-line bg-cmd-surface', 'p-3 font-mono text-[11px] text-cmd-fg-dim', 'whitespace-pre-wrap break-all leading-relaxed', 'max-h-64 overflow-y-auto')}>
-      {JSON.stringify(data, null, 2)}
-    </pre>;
 }
 function computeDuration(t: TaskRun): string | null {
   if (!t.startedAt) return null;

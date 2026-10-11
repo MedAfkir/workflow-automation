@@ -6,6 +6,7 @@ import { ApiError } from '@/lib/api/client';
 import { createWorkflow } from '@/lib/api/workflows';
 import { serializeWorkflow } from '@/lib/editor/serialize';
 import { invalidTaskIds, validate } from '@/lib/editor/validate';
+import { useHydratePluginCatalog } from '@/lib/editor/catalog';
 import { clearDraft, readDraft, writeDraft, type StoredDraft } from '@/lib/editor/draft';
 import { useEditorStore } from './store';
 import { EditorHeader } from './EditorHeader';
@@ -27,6 +28,7 @@ export function EditorPage() {
   const removeTask = useEditorStore(s => s.removeTask);
   const hydrate = useEditorStore(s => s.hydrate);
   const reset = useEditorStore(s => s.reset);
+  useHydratePluginCatalog();
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showErrors, setShowErrors] = useState(false);

@@ -17,6 +17,9 @@ public interface TriggerJpaRepository extends JpaRepository<TriggerEntity, UUID>
 
     void deleteByWorkflowId(UUID workflowId);
 
+    @Query("SELECT t.workflowId, COUNT(t) FROM TriggerEntity t GROUP BY t.workflowId")
+    List<Object[]> countByWorkflow();
+
     @Query("""
             SELECT t FROM TriggerEntity t
             WHERE t.enabled = true
