@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.spring.boot) apply false
     alias(libs.plugins.spring.dep.mgmt) apply false
+    alias(libs.plugins.spotless) apply false
+    id 'base'
+    id 'jacoco'
 }
 
 allprojects {
@@ -12,8 +15,14 @@ allprojects {
     }
 }
 
+jacoco {
+    toolVersion = libs.versions.jacoco.get()
+}
+
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.diffplug.spotless'
 
     java {
         toolchain {
@@ -34,5 +43,85 @@ subprojects {
 
     tasks.withType(JavaExec).configureEach {
         jvmArgs '--enable-preview'
+    }
+
+    jacoco {
+        toolVersion = libs.versions.jacoco.get()
+    }
+
+    tasks.named('test') {
+        finalizedBy tasks.named('jacocoTestReport')
+    }
+
+    tasks.named('jacocoTestReport') {
+        dependsOn tasks.named('test')
+        reports {
+            html.required = true
+            xml.required = true
+            csv.required = false
+        }
+    }
+
+    spotless {
+        enforceCheck = false
+        java {
+            target 'src/**/*.java'
+            googleJavaFormat(libs.versions.google.java.format.get())
+            removeUnusedImports()
+            formatAnnotations()
+        }
+    }
+}
+
+def coreModules = subprojects.findAll { it.path.startsWith(':core:') }
+def coverageThreshold = '0.75'
+
+tasks.register('jacocoCoreReport', JacocoReport) {
+    group = 'verification'
+    description = 'Generates an aggregated JaCoCo coverage report for the core modules.'
+
+    dependsOn coreModules.collect { "${it.path}:test" }
+
+    executionData.setFrom(files(coreModules.collect { it.layout.buildDirectory.file('jacoco/test.exec') }).filter { it.exists() })
+    sourceDirectories.setFrom(coreModules.collect { it.layout.projectDirectory.dir('src/main/java') })
+    classDirectories.setFrom(coreModules.collect { it.layout.buildDirectory.dir('classes/java/main') })
+
+    reports {
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco/core/html')
+        xml.required = true
+        xml.outputLocation = layout.buildDirectory.file('reports/jacoco/core/jacocoCoreReport.xml')
+        csv.required = false
+    }
+}
+
+tasks.register('jacocoCoreCoverageVerification', JacocoCoverageVerification) {
+    group = 'verification'
+    description = "Fails the build if aggregated core coverage is below ${coverageThreshold}."
+
+    dependsOn coreModules.collect { "${it.path}:test" }
+
+    executionData.setFrom(files(coreModules.collect { it.layout.buildDirectory.file('jacoco/test.exec') }).filter { it.exists() })
+    sourceDirectories.setFrom(coreModules.collect { it.layout.projectDirectory.dir('src/main/java') })
+    classDirectories.setFrom(coreModules.collect { it.layout.buildDirectory.dir('classes/java/main') })
+
+    violationRules {
+        rule {
+            limit {
+                counter = 'INSTRUCTION'
+                value = 'COVEREDRATIO'
+                minimum = coverageThreshold.toBigDecimal()
+            }
+        }
+    }
+}
+
+def enforceCoverage = providers.gradleProperty('enforceCoverage')
+    .map { Boolean.parseBoolean(it) }
+    .getOrElse(false)
+
+if (enforceCoverage) {
+    tasks.named('check') {
+        dependsOn 'jacocoCoreCoverageVerification'
     }
 }

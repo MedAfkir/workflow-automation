@@ -28,8 +28,8 @@ jobs:
       - name: Setup Gradle (with cache)
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Build & test
-        run: ./gradlew build --no-daemon
+      - name: Build, test & coverage
+        run: ./gradlew build jacocoCoreReport --no-daemon
 
       - name: Upload test reports
         if: always()
@@ -39,6 +39,14 @@ jobs:
           path: |
             **/build/reports/tests/test/
             **/build/test-results/test/
+          retention-days: 7
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jacoco-core-coverage
+          path: build/reports/jacoco/core/html/
           retention-days: 7
 
   docker:
