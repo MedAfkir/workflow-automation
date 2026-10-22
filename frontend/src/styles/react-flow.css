@@ -1,0 +1,53 @@
+.react-flow {
+  background-color: oklch(var(--cmd-bg));
+}
+
+.react-flow__edge-path {
+  stroke: oklch(var(--cmd-line-strong));
+  stroke-width: 2;
+}
+
+.react-flow__edge.dashed .react-flow__edge-path {
+  stroke-dasharray: 5 5;
+  stroke-width: 1.5;
+  stroke: oklch(var(--cmd-line));
+}
+
+.react-flow__edge.running .react-flow__edge-path {
+  stroke: oklch(var(--run-running));
+}
+
+.react-flow__edge.success .react-flow__edge-path {
+  stroke: oklch(var(--run-success));
+}
+
+.react-flow__edge.failed .react-flow__edge-path {
+  stroke: oklch(var(--run-failed));
+}
+
+.react-flow__handle {
+  background: oklch(var(--cmd-line-strong));
+  width: 6px;
+  height: 6px;
+  border: none;
+}
+
+.react-flow__controls {
+  background: oklch(var(--cmd-raised));
+  border: 1px solid oklch(var(--cmd-line));
+  border-radius: 6px;
+}
+
+.react-flow__controls-button {
+  background: transparent;
+  border-bottom: 1px solid oklch(var(--cmd-line));
+  color: oklch(var(--cmd-fg-dim));
+}
+
+.react-flow__controls-button:hover {
+  background: oklch(var(--cmd-hover));
+}
+
+.react-flow__attribution {
+  display: none;
+}

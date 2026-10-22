@@ -99,6 +99,9 @@ pnpm install
 pnpm dev
 ```
 
+Scripts, formatting and code conventions for the UI are described in
+[frontend/README.md](frontend/README.md).
+
 ## CLI
 
 ```

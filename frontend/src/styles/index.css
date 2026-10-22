@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+
+    --cmd-bg: 0.165 0.006 195;
+    --cmd-surface: 0.205 0.007 195;
+    --cmd-raised: 0.245 0.008 195;
+    --cmd-hover: 0.275 0.01 195;
+    --cmd-sel: 0.305 0.045 195;
+    --cmd-line: 0.305 0.01 195;
+    --cmd-line-strong: 0.4 0.012 195;
+    --cmd-fg: 0.955 0.006 195;
+    --cmd-fg-dim: 0.79 0.011 195;
+    --cmd-fg-mute: 0.635 0.013 195;
+    --cmd-accent: 0.78 0.125 195;
+    --cmd-accent-dim: 0.56 0.1 195;
+    --cmd-fail-wash: 0.21 0.03 25;
+
+    --run-created: 0.7 0.018 195;
+    --run-pending: 0.7 0.018 195;
+    --run-running: 0.72 0.12 235;
+    --run-waiting: 0.78 0.12 75;
+    --run-success: 0.74 0.13 150;
+    --run-failed: 0.66 0.18 25;
+    --run-killed: 0.64 0.1 40;
+    --run-skipped: 0.55 0.01 195;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    background: oklch(var(--cmd-bg));
+  }
+
+  body {
+    @apply font-mono text-cmd-fg antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: oklch(var(--cmd-accent) / 0.3);
+    color: oklch(var(--cmd-bg));
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(circle at 1px 1px, oklch(var(--cmd-line)) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--cmd-line));
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--cmd-line-strong));
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
