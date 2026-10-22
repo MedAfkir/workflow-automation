@@ -36,3 +36,81 @@ subprojects {
         jvmArgs '--enable-preview'
     }
 }
+
+interface ViteDevServerParams extends BuildServiceParameters {
+    DirectoryProperty getWorkingDir()
+    ListProperty<String> getCommand()
+}
+
+abstract class ViteDevServer implements BuildService<ViteDevServerParams>, AutoCloseable {
+    private Process process
+
+    synchronized void start() {
+        if (process != null) {
+            return
+        }
+        def logger = Logging.getLogger(ViteDevServer)
+        process = new ProcessBuilder(parameters.command.get())
+                .directory(parameters.workingDir.get().asFile)
+                .redirectErrorStream(true)
+                .start()
+        def output = process.inputStream
+        Thread.startDaemon('vite-dev-server') {
+            output.eachLine('UTF-8') { logger.lifecycle("[ui] ${it}") }
+        }
+    }
+
+    @Override
+    synchronized void close() {
+        if (process == null) {
+            return
+        }
+        process.descendants().forEach { it.destroy() }
+        process.destroy()
+    }
+}
+
+def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
+def pnpm = { List<String> args -> (isWindows ? ['cmd', '/c', 'pnpm'] : ['pnpm']) + args }
+def isListening = { int port ->
+    try (Socket socket = new Socket()) {
+        socket.connect(new InetSocketAddress('localhost', port), 500)
+        return true
+    } catch (IOException ignored) {
+        return false
+    }
+}
+
+def viteDevServer = gradle.sharedServices.registerIfAbsent('viteDevServer', ViteDevServer) {
+    parameters.workingDir = layout.projectDirectory.dir('frontend')
+    parameters.command = pnpm(['dev'])
+}
+
+tasks.register('postgresUp', Exec) {
+    group = 'application'
+    description = 'Starts Postgres with Docker Compose unless something already listens on port 5433'
+    commandLine 'docker', 'compose', 'up', '-d', '--wait', 'postgres'
+    onlyIf('port 5433 is free') { !isListening(5433) }
+}
+
+tasks.register('frontendInstall', Exec) {
+    group = 'frontend'
+    description = 'Installs the web UI dependencies with pnpm'
+    workingDir = file('frontend')
+    commandLine pnpm(['install', '--frozen-lockfile'])
+    inputs.files('frontend/package.json', 'frontend/pnpm-lock.yaml')
+    outputs.file('frontend/node_modules/.modules.yaml')
+}
+
+tasks.register('frontendDev') {
+    description = 'Starts the Vite dev server in the background until the build ends'
+    dependsOn 'frontendInstall'
+    usesService viteDevServer
+    doLast { viteDevServer.get().start() }
+}
+
+tasks.register('dev') {
+    group = 'application'
+    description = 'Runs Postgres, the API on :8080 and the web UI on :5173 with one command'
+    dependsOn 'postgresUp', 'frontendDev', ':applications:app-api:bootRun'
+}
