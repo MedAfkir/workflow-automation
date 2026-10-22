@@ -8,6 +8,10 @@ springBoot {
     buildInfo()
 }
 
+tasks.named('bootRun') {
+    mustRunAfter ':postgresUp', ':frontendDev'
+}
+
 dependencies {
     implementation project(':core:core-domain')
     implementation project(':core:core-plugin-sdk')

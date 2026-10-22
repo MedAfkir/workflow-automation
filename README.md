@@ -79,7 +79,18 @@ streamed to clients over Server-Sent Events.
 
 Needs JDK 26, Node + pnpm, Go 1.26 and Docker.
 
-Start Postgres (Adminer comes up on http://localhost:8081):
+Run everything with one command:
+
+```
+./gradlew dev
+```
+
+This starts Postgres with Docker Compose (skipped if something already listens on port 5433),
+installs the UI dependencies, starts the Vite dev server on http://localhost:5173 in the
+background and runs the API on http://localhost:8080 in the foreground. UI logs are prefixed
+with `[ui]`. Ctrl+C stops both.
+
+To run the pieces separately, start Postgres:
 
 ```
 docker compose up -d
