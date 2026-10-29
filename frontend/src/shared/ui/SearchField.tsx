@@ -37,7 +37,7 @@ export function SearchField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key !== 'Escape') return;
+          if (e.key !== 'Escape' || e.defaultPrevented) return;
           e.preventDefault();
           if (value) onChange('');
           e.currentTarget.blur();

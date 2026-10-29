@@ -9,7 +9,6 @@ import { useRunWorkflow } from '../queries';
 import type { Trigger, WorkflowDetail as Workflow, WorkflowRevision } from '../types';
 import { DefinitionPanel, type DefinitionView } from './DefinitionPanel';
 import { RecentRuns } from './RecentRuns';
-import { ShortcutsSheet } from './ShortcutsSheet';
 import { WorkflowRail } from './WorkflowRail';
 import { WorkflowTopBar } from './WorkflowTopBar';
 
@@ -29,7 +28,6 @@ export function WorkflowDetail({ workflow, revisions, triggers }: WorkflowDetail
   const navigate = useNavigate();
   const [view, setView] = useState<DefinitionView>('graph');
   const [runOpen, setRunOpen] = useState(false);
-  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const run = useRunWorkflow(workflow.id);
   const { data: executions } = useExecutions({ limit: 50 });
 
@@ -54,8 +52,7 @@ export function WorkflowDetail({ workflow, revisions, triggers }: WorkflowDetail
     g: () => setView('graph'),
     y: () => setView('yaml'),
     e: () => navigate(`/workflows/${workflow.id}/edit`),
-    '?': () => setShortcutsOpen((o) => !o),
-    escape: !runOpen && !shortcutsOpen && (() => navigate('/workflows')),
+    escape: !runOpen && (() => navigate('/workflows')),
   });
 
   return (
@@ -86,8 +83,6 @@ export function WorkflowDetail({ workflow, revisions, triggers }: WorkflowDetail
 
         <WorkflowRail workflow={workflow} triggers={triggers} revisions={revisions} />
       </div>
-
-      <ShortcutsSheet open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </div>
   );
 }

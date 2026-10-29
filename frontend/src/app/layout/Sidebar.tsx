@@ -1,8 +1,9 @@
-import { Activity, GitBranch, KeyRound, Layers, Plug, Workflow } from 'lucide-react';
+import { Activity, GitBranch, Keyboard, KeyRound, Layers, Plug, Workflow } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 import { cn } from '@/shared/lib/cn';
 import { DEMO_MODE } from '@/shared/lib/env';
+import { Kbd } from '@/shared/ui/Kbd';
 
 const NAV_ITEMS = [
   {
@@ -32,7 +33,12 @@ const NAV_ITEMS = [
   },
 ] as const;
 
-export function Sidebar() {
+interface SidebarProps {
+  shortcutsOpen: boolean;
+  onOpenShortcuts: () => void;
+}
+
+export function Sidebar({ shortcutsOpen, onOpenShortcuts }: SidebarProps) {
   return (
     <aside
       className={cn(
@@ -75,6 +81,29 @@ export function Sidebar() {
           ))}
         </ul>
       </nav>
+
+      <div className="px-2 pb-2">
+        <button
+          type="button"
+          onClick={onOpenShortcuts}
+          aria-haspopup="dialog"
+          aria-expanded={shortcutsOpen}
+          aria-keyshortcuts="?"
+          className={cn(
+            'flex w-full items-center gap-2.5 px-3 py-1.5',
+            'font-mono text-base outline-none',
+            'rounded-md transition-colors',
+            'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cmd-accent',
+            'text-cmd-fg-mute hover:bg-cmd-hover hover:text-cmd-fg',
+          )}
+        >
+          <Keyboard className="h-3.5 w-3.5" aria-hidden />
+          Shortcuts
+          <Kbd className="ml-auto" aria-hidden>
+            ?
+          </Kbd>
+        </button>
+      </div>
 
       <div className="border-t border-cmd-line px-5 py-3">
         <div className="flex items-center gap-2">

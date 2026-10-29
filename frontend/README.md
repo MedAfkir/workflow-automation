@@ -69,6 +69,7 @@ src/
       api.ts            wire types, adapters, fetch functions (no React)
       queries.ts        query keys, useQuery / useMutation hooks
       types.ts          domain types
+      shortcuts.ts      keyboard shortcuts of the feature's pages, listed in the shortcuts dialog
       pages/            route components: read params, load data, handle loading / error / 404
       components/       UI of the feature, data comes in through props
       hooks/ lib/       feature-only hooks and pure helpers, when needed
@@ -77,6 +78,7 @@ src/
     api/                fetch client, ApiError
     ui/                 Button, Badge, Kbd, PageHeader, Toolbar, ChipGroup, SearchField, Table, States
     filter/             filter query language and FilterInput
+    shortcuts/          shortcut types, search, ShortcutsDialog (opened with ? or Ctrl+/)
     hooks/              useHotkeys, useRovingFocus, useFocusTrap
     lib/                cn, formatters, env flags
   mocks/                demo data, only used when VITE_DEMO=true
