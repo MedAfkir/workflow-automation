@@ -4,4 +4,5 @@ export { StatusBadge } from './components/StatusBadge';
 export { ExecutionDetailPage } from './pages/ExecutionDetailPage';
 export { ExecutionsListPage } from './pages/ExecutionsListPage';
 export { executionKeys, useExecutions } from './queries';
+export { executionsShortcuts } from './shortcuts';
 export type * from './types';

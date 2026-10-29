@@ -11,7 +11,6 @@ import { ConfigPanel } from '../components/ConfigPanel';
 import { DraftBanner } from '../components/DraftBanner';
 import { EditorCanvas } from '../components/EditorCanvas';
 import { EditorHeader } from '../components/EditorHeader';
-import { EditorShortcuts } from '../components/EditorShortcuts';
 import { PluginPalette } from '../components/PluginPalette';
 import { YamlPreview } from '../components/YamlPreview';
 import { useHydratePluginCatalog } from '../lib/catalog';
@@ -38,7 +37,6 @@ export function EditorPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showErrors, setShowErrors] = useState(false);
   const [draftFound, setDraftFound] = useState<StoredDraft | null>(null);
-  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const issues = useMemo(
     () =>
       validate({
@@ -115,11 +113,6 @@ export function EditorPage() {
           e.preventDefault();
           setView('yaml');
           break;
-        case '?':
-          if (typing) break;
-          e.preventDefault();
-          setShortcutsOpen((o) => !o);
-          break;
         case 'delete':
         case 'backspace':
           if (typing || !selectedId) break;
@@ -127,7 +120,6 @@ export function EditorPage() {
           removeTask(selectedId);
           break;
         case 'escape':
-          if (shortcutsOpen) break;
           if (typing) {
             (el as HTMLElement).blur();
             break;
@@ -139,7 +131,7 @@ export function EditorPage() {
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [handleSave, selectedId, shortcutsOpen, setView, removeTask, navigate]);
+  }, [handleSave, selectedId, setView, removeTask, navigate]);
 
   return (
     <div className="flex h-full w-full flex-col bg-cmd-bg font-mono text-cmd-fg">
@@ -194,8 +186,6 @@ export function EditorPage() {
       </div>
 
       <StatusBar taskCount={tasks.length} blockingCount={blockingCount} />
-
-      <EditorShortcuts open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </div>
   );
 }
