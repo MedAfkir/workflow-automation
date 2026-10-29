@@ -62,8 +62,8 @@ tasks:
             message: "item {{ index }} = {{ value }}"
 ```
 
-Built-in tasks: Log, Http, Sleep, If, ForEach, Wait, Switch. Triggers: Schedule (cron) and
-Webhook. Strings are templated with Pebble, so `{{ inputs.name }}`, `{{ value }}` and
+Built-in tasks: Log, Http, Email, Sleep, If, ForEach, Wait, Switch. Triggers: Schedule (cron)
+and Webhook. Strings are templated with Pebble, so `{{ inputs.name }}`, `{{ value }}` and
 `{{ index }}` are resolved at run time.
 
 ## How it works
