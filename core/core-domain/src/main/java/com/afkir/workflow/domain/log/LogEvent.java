@@ -32,12 +32,4 @@ public record LogEvent(
                                   String level, String message) {
         return new LogEvent(0L, executionId, taskRunId, level, message, Instant.now());
     }
-
-    public LogEvent withId(long persistedId) {
-        return new LogEvent(persistedId, executionId, taskRunId, level, message, loggedAt);
-    }
-
-    public boolean isPersisted() {
-        return id > 0L;
-    }
 }

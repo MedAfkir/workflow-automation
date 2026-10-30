@@ -1,19 +1,19 @@
 package com.afkir.workflow.app.log;
 
-import com.afkir.workflow.infra.persistence.log.LogQueryService;
 import com.afkir.workflow.domain.execution.ExecutionId;
-import com.afkir.workflow.domain.log.LogEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -21,45 +21,44 @@ import java.util.UUID;
 @RequestMapping("/api/v1/executions")
 public class LogStreamController {
 
+    private static final Logger log = LoggerFactory.getLogger(LogStreamController.class);
+
     private static final Duration MAX_STREAM_DURATION = Duration.ofMinutes(30);
 
-    private static final Duration HEARTBEAT_INTERVAL = Duration.ofSeconds(15);
+    private final LogTail tail;
+    private final AsyncTaskExecutor executor;
 
-    private final LogQueryService logQueryService;
-    private final LogStreamHub hub;
-
-    public LogStreamController(LogQueryService logQueryService, LogStreamHub hub) {
-        this.logQueryService = logQueryService;
-        this.hub = hub;
+    public LogStreamController(LogTail tail,
+                               @Qualifier("applicationTaskExecutor") AsyncTaskExecutor executor) {
+        this.tail = tail;
+        this.executor = executor;
     }
 
     @GetMapping(value = "/{id}/logs/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<LogEventResponse>> stream(
+    public SseEmitter stream(
             @PathVariable UUID id,
             @RequestHeader(value = "Last-Event-ID", required = false) Long sinceId) {
 
         var executionId = new ExecutionId(id);
         long since = sinceId == null ? 0L : sinceId;
+        var emitter = new SseEmitter(MAX_STREAM_DURATION.toMillis());
+        var output = new SseLogStreamOutput(emitter);
 
-        Flux<LogEvent> backlog = Mono
-                .fromCallable(() -> logQueryService.findSince(executionId, since))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMapMany(Flux::fromIterable);
-
-        Flux<LogEvent> live = hub.streamFor(executionId);
-
-        Flux<ServerSentEvent<LogEventResponse>> events = backlog.concatWith(live)
-                .map(LogEventResponse::from)
-                .map(e -> ServerSentEvent.<LogEventResponse>builder()
-                        .id(String.valueOf(e.id()))
-                        .event("log")
-                        .data(e)
-                        .build());
-
-        Flux<ServerSentEvent<LogEventResponse>> heartbeat = Flux.interval(HEARTBEAT_INTERVAL)
-                .map(t -> ServerSentEvent.<LogEventResponse>builder().comment("ping").build());
-
-        return Flux.merge(events, heartbeat)
-                .take(MAX_STREAM_DURATION);
+        executor.execute(() -> {
+            try {
+                tail.run(executionId, since, output);
+                emitter.complete();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                emitter.complete();
+            } catch (IOException e) {
+                log.debug("Log stream for execution {} closed by client: {}", id, e.getMessage());
+                emitter.completeWithError(e);
+            } catch (RuntimeException e) {
+                log.warn("Log stream for execution {} failed: {}", id, e.getMessage());
+                emitter.completeWithError(e);
+            }
+        });
+        return emitter;
     }
 }

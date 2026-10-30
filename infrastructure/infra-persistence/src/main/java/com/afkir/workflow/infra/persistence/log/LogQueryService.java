@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class LogQueryService {
 
-    private static final int MAX_BACKLOG_PAGE = 1000;
+    public static final int PAGE_SIZE = 1000;
 
     private final LogJpaRepository repository;
 
@@ -23,7 +23,7 @@ public class LogQueryService {
     public List<LogEvent> findSince(ExecutionId executionId, long sinceId) {
         return repository
                 .findByExecutionIdAndIdGreaterThanOrderByIdAsc(
-                        executionId.value(), sinceId, Limit.of(MAX_BACKLOG_PAGE))
+                        executionId.value(), sinceId, Limit.of(PAGE_SIZE))
                 .stream()
                 .map(e -> new LogEvent(
                         e.getId(),

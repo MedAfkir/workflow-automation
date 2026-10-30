@@ -68,6 +68,17 @@ workflow:
   trigger:
     enabled: true
     poll-interval: PT5S
+  logs:
+    # Max log lines kept in memory between two flushes; lines beyond it are dropped.
+    buffer-capacity: 2048
+    # Max lines written to Postgres in one flush.
+    flush-batch-size: 200
+    # Delay in milliseconds between two flushes.
+    flush-interval: 200
+    # Delay between two reads of the log table by an open SSE stream.
+    stream-poll-interval: PT0.5S
+    # Idle time after which an open SSE stream sends a keep-alive comment.
+    stream-heartbeat-interval: PT15S
   secrets:
 
     master-key: ${WORKFLOW_SECRET_MASTER_KEY:}
