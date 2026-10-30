@@ -1,6 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { isExecutionLive } from '@/features/executions/lib/state';
+
 import { type ExecutionsQuery, fetchExecution, fetchExecutions } from './api';
+
+// TODO: unify with the backend dispatcher poll interval through a single config value.
+const LIVE_DETAIL_REFETCH_MS = 2_000;
 
 export const executionKeys = {
   all: ['executions'] as const,
@@ -22,5 +27,11 @@ export function useExecution(id: string | undefined) {
     queryKey: executionKeys.detail(id ?? ''),
     queryFn: ({ signal }) => fetchExecution(id!, signal),
     enabled: !!id,
+    // Poll while live, stop on terminal state.
+    refetchInterval: (query) => {
+      const state = query.state.data?.state;
+      return state && isExecutionLive(state) ? LIVE_DETAIL_REFETCH_MS : false;
+    },
+    refetchIntervalInBackground: false,
   });
 }

@@ -2,11 +2,12 @@ import { ChevronRight } from 'lucide-react';
 import { forwardRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { isExecutionLive } from '@/features/executions/lib/state';
+import type { ExecutionState, ExecutionSummary } from '@/features/executions/types';
 import { cn } from '@/shared/lib/cn';
 import { formatDuration, relativeTime, shortId } from '@/shared/lib/format';
 import { SkeletonBar } from '@/shared/ui/Table';
 
-import type { ExecutionState, ExecutionSummary } from '../types';
 import { ROW_GRID } from './grid';
 import { StatusBadge } from './StatusBadge';
 
@@ -117,7 +118,7 @@ export function ExecutionRowSkeleton() {
 function useNow(state: ExecutionState): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    if (state !== 'CREATED' && state !== 'RUNNING') return;
+    if (!isExecutionLive(state)) return;
     const interval = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(interval);
   }, [state]);

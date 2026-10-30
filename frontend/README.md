@@ -96,9 +96,11 @@ Features: `executions`, `workflows`, `editor`, `namespaces`, `plugins`, `secrets
 
 ### Imports and boundaries
 
-- Inside a feature, use relative imports (`./`, `../`). Everywhere else, use the `@/` alias.
-- A feature imports another feature only through its index: `@/features/executions`, never
-  `@/features/executions/components/...`. ESLint rejects deep imports.
+- Use the `@/` alias for anything outside the current folder, including inside a feature
+  (`@/features/executions/lib/state`). `./` is fine for direct siblings. `../../` is rejected:
+  relative imports must stay inside the feature.
+- Each feature exposes a public surface in its `index.ts`. Prefer it when importing another
+  feature (`@/features/executions`); deep imports are allowed but couple you to its layout.
 - `shared/` never imports from `app/`, `features/` or `mocks/`. Features never import from `app/`.
 - Imports are sorted automatically (`pnpm lint:fix`): packages, then `@/`, then relative.
 
@@ -107,6 +109,8 @@ Features: `executions`, `workflows`, `editor`, `namespaces`, `plugins`, `secrets
 - `api.ts` turns the backend payloads into domain types. Components never call `fetch`.
 - Every query key comes from the key factory of the feature (`workflowKeys.detail(id)`, ...).
 - Writes go through `useMutation` hooks that invalidate the affected keys; no manual `refetch()`.
+- Live data polls through `refetchInterval`: the executions list every 5s, an execution detail
+  every 2s while it is `CREATED` or `RUNNING` (the dispatcher's own poll interval), then stops.
 - Pages show real errors with `ErrorState`. Mock data only exists in demo mode.
 
 ### Styling

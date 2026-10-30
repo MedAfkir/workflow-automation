@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 
-import { useExecutionLogs } from '../hooks/useExecutionLogs';
-import type { Execution } from '../types';
+import { useExecutionLogs } from '@/features/executions/hooks/useExecutionLogs';
+import { isExecutionLive } from '@/features/executions/lib/state';
+import type { Execution } from '@/features/executions/types';
+
 import { ExecutionDagCanvas } from './ExecutionDagCanvas';
 import { ExecutionTopBar } from './ExecutionTopBar';
 import { LogsDrawer } from './LogsDrawer';
@@ -13,7 +15,7 @@ interface ExecutionDetailProps {
 
 export function ExecutionDetail({ execution }: ExecutionDetailProps) {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>('fetch_users');
-  const isLive = execution.state === 'CREATED' || execution.state === 'RUNNING';
+  const isLive = isExecutionLive(execution.state);
   const selectedTask = useMemo(
     () => execution.taskRuns.find((t) => t.taskId === selectedTaskId) ?? null,
     [execution.taskRuns, selectedTaskId],
