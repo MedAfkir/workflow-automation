@@ -1,12 +1,13 @@
 import { Copy, Share2, Square } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { isExecutionLive } from '@/features/executions/lib/state';
+import type { Execution } from '@/features/executions/types';
 import { cn } from '@/shared/lib/cn';
 import { formatDuration, shortId } from '@/shared/lib/format';
 import { Badge } from '@/shared/ui/Badge';
 import { Button } from '@/shared/ui/Button';
 
-import type { Execution } from '../types';
 import { StatusBadge } from './StatusBadge';
 
 interface ExecutionTopBarProps {
@@ -61,7 +62,7 @@ export function ExecutionTopBar({ execution, isLive }: ExecutionTopBarProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {(execution.state === 'CREATED' || execution.state === 'RUNNING') && (
+        {isExecutionLive(execution.state) && (
           <Button variant="destructive" size="md">
             <Square className="h-3.5 w-3.5" fill="currentColor" />
             Kill

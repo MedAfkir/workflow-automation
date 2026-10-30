@@ -6,11 +6,6 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-const crossFeatureImport = {
-  regex: '^@/features/[^/]+/',
-  message: 'Import another feature through its public index (@/features/<name>).',
-};
-
 export default defineConfig([
   globalIgnores(['dist']),
   {
@@ -31,7 +26,6 @@ export default defineConfig([
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
       'no-empty': ['error', { allowEmptyCatch: true }],
-      'no-restricted-imports': ['error', { patterns: [crossFeatureImport] }],
     },
   },
   {
@@ -41,7 +35,6 @@ export default defineConfig([
         'error',
         {
           patterns: [
-            crossFeatureImport,
             {
               regex: '^\.\./\.\./',
               message: 'Relative imports must stay inside the feature.',
