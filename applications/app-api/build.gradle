@@ -26,8 +26,6 @@ dependencies {
     
     implementation 'tools.jackson.dataformat:jackson-dataformat-yaml'
 
-    implementation 'io.projectreactor:reactor-core'
-
     implementation 'com.github.victools:jsonschema-generator:4.36.0'
     implementation 'com.github.victools:jsonschema-module-jakarta-validation:4.36.0'
 
@@ -37,8 +35,7 @@ dependencies {
     runtimeOnly libs.flyway.postgres
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'  
-    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation libs.testcontainers.postgres
     testImplementation libs.testcontainers.junit
     testImplementation libs.assertj.core

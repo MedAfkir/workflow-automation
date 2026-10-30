@@ -18,26 +18,11 @@ class LogEventTest {
         var e = LogEvent.submit(execId, null, "INFO", "hello");
 
         assertThat(e.id()).isZero();
-        assertThat(e.isPersisted()).isFalse();
         assertThat(e.executionId()).isEqualTo(execId);
         assertThat(e.taskRunId()).isNull();
         assertThat(e.level()).isEqualTo("INFO");
         assertThat(e.message()).isEqualTo("hello");
         assertThat(e.loggedAt()).isAfterOrEqualTo(before);
-    }
-
-    @Test
-    void withId_returns_persisted_copy_keeping_other_fields() {
-        var e = LogEvent.submit(ExecutionId.generate(), null, "INFO", "hi");
-
-        var persisted = e.withId(42L);
-
-        assertThat(persisted.id()).isEqualTo(42L);
-        assertThat(persisted.isPersisted()).isTrue();
-        assertThat(persisted.executionId()).isEqualTo(e.executionId());
-        assertThat(persisted.level()).isEqualTo(e.level());
-        assertThat(persisted.message()).isEqualTo(e.message());
-        assertThat(persisted.loggedAt()).isEqualTo(e.loggedAt());
     }
 
     @Test

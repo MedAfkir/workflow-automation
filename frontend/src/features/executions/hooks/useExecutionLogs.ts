@@ -81,9 +81,15 @@ export function useExecutionLogs(
       };
       setLogs((prev) => [...prev, line]);
     };
+    const onEnd = () => {
+      setConnected(false);
+      source.close();
+    };
     source.addEventListener('log', onLog as EventListener);
+    source.addEventListener('end', onEnd);
     return () => {
       source.removeEventListener('log', onLog as EventListener);
+      source.removeEventListener('end', onEnd);
       source.close();
     };
   }, [executionId, enabled]);
